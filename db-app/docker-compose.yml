@@ -1,0 +1,38 @@
+version: '3.7'
+
+services:
+  moviedb:
+    image: mysql:8
+    container_name: moviedb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_DATABASE: moviedb
+      MYSQL_USER: movie
+      MYSQL_PASSWORD: Admin123*
+    ports:
+      - 3306:3306
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - moviebase-netw
+
+  moviebase-api:
+    image: duda973/moviebase
+    restart: always
+    depends_on:
+      - moviedb
+    container_name: moviebase-app
+    ports:
+      - 8080:8080
+    environment: 
+      SPRING_DATASOURCE_URL: jdbc:mysql://moviedb:3306/moviedb?autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true
+    networks:
+      - moviebase-netw
+
+# Names our volume
+volumes:
+  dbdata:
+
+networks:
+    moviebase-netw:
